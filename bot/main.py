@@ -100,13 +100,18 @@ async def cmd_help(ctx):
 async def on_message(message: discord.Message):
     if message.author.bot:
         return
-    # Handle @mention free-text
-    if bot.user in message.mentions:
-        text = message.content.replace(f"<@{bot.user.id}>", "").strip()
+    # Handle @mention free-text — match both <@ID> and <@!ID> (nickname mentions)
+    bot_mentioned = bot.user is not None and any(m.id == bot.user.id for m in message.mentions)
+    if bot_mentioned:
+        uid = bot.user.id
+        text = message.content.replace(f"<@!{uid}>", "").replace(f"<@{uid}>", "").strip()
         if text:
-            async with message.channel.typing():
-                reply = await ask(text)
-            await message.channel.send(reply)
+            try:
+                async with message.channel.typing():
+                    reply = await ask(text)
+                await message.channel.send(reply)
+            except Exception as exc:
+                await message.channel.send(f"⚠️ Unexpected error: {exc}")
             return
     await bot.process_commands(message)
 
