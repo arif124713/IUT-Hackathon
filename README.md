@@ -23,7 +23,7 @@ short_description: Real-time office electricity monitor with AI Discord bot
 | **GitHub Repo** | 💻 [github.com/arif124713/IUT-Hackathon](https://github.com/arif124713/IUT-Hackathon) |
 | **Join Discord Server** | 💬 [discord.gg/x6T93a2J](https://discord.gg/x6T93a2J) — test the bot live |
 | **Add Bot to Your Server** | 🤖 [Invite OfficePulse Bot](https://discord.com/oauth2/authorize?client_id=1522825819926433943&permissions=2048&scope=bot) |
-| **Demo Video** | 🎬 *(coming soon — link will be added before submission)* |
+| **Demo Video** | 🎬 [Watch on YouTube](https://youtu.be/6eLO_481F8w) |
 
 ---
 
