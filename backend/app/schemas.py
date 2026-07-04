@@ -41,6 +41,15 @@ class AlertOut(BaseModel):
     resolved_at: datetime | None = None
 
 
+class StateEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    device_id: str
+    new_status: bool
+    changed_at_utc: datetime
+
+
 class SummaryOut(BaseModel):
     devices: list[DeviceOut]
     power: PowerOut

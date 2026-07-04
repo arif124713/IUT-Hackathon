@@ -93,11 +93,18 @@ async def get_device_history(device_id: str, limit: int = 10) -> dict:
     """
     Return recent state-change events for a specific device.
     Useful for 'when was fan 2 last turned on?' type questions.
+    device_id format: '<room>-<type>-<n>', e.g. 'work1-fan-2'.
     """
-    return {
-        "note": f"History endpoint not yet wired — device_id={device_id}, limit={limit}",
-        "generated_at": _now_ts(),
-    }
+    try:
+        events = await _get(f"/api/devices/{device_id}/history?limit={limit}")
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code == 404:
+            return {
+                "error": f"Unknown device_id '{device_id}'.",
+                "generated_at": _now_ts(),
+            }
+        raise
+    return {"device_id": device_id, "events": events, "generated_at": _now_ts()}
 
 
 if __name__ == "__main__":

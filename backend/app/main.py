@@ -14,10 +14,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .config import get_settings
 from .db import init_db, get_db
-from .models import Device, Alert
+from .models import Device, StateEvent, Alert
 from .schemas import (
     DeviceOut, RoomOut, PowerOut, AlertOut, SummaryOut,
-    HealthOut, ScenarioIn, ScenarioOut,
+    HealthOut, ScenarioIn, ScenarioOut, StateEventOut,
 )
 from .ws import manager
 from .power import compute_today_kwh
@@ -91,6 +91,23 @@ async def get_devices(room: str | None = Query(None), db: AsyncSession = Depends
         q = q.where(Device.room == room)
     devices = (await db.execute(q.order_by(Device.room, Device.id))).scalars().all()
     return [_device_out(d) for d in devices]
+
+
+@app.get("/api/devices/{device_id}/history", response_model=list[StateEventOut])
+async def get_device_history(
+    device_id: str, limit: int = Query(10, ge=1, le=100), db: AsyncSession = Depends(get_db)
+):
+    device = await db.get(Device, device_id)
+    if device is None:
+        raise HTTPException(status_code=404, detail=f"Unknown device_id '{device_id}'")
+    q = (
+        select(StateEvent)
+        .where(StateEvent.device_id == device_id)
+        .order_by(StateEvent.changed_at_utc.desc())
+        .limit(limit)
+    )
+    events = (await db.execute(q)).scalars().all()
+    return events
 
 
 @app.get("/api/rooms", response_model=list[RoomOut])
