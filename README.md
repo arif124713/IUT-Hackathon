@@ -1,3 +1,14 @@
+---
+title: OfficePulse
+emoji: ⚡
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: Real-time office electricity monitor with AI Discord bot
+---
+
 # ⚡ OfficePulse — Real-Time Office Electricity Monitor
 
 > **IUT Hackathon Project** — A full-stack, AI-powered system that monitors, simulates, and reports on office electricity consumption in real time.
