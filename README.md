@@ -26,23 +26,6 @@ short_description: Real-time office electricity monitor with AI Discord bot
 
 ---
 
-## Table of Contents
-
-- [Overview](#overview)
-- [MCP — The Core Innovation](#mcp--the-core-innovation)
-- [Architecture](#architecture)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [API Reference](#api-reference)
-- [Discord Bot Commands](#discord-bot-commands)
-- [Frontend Features](#frontend-features)
-- [How the Simulator Works](#how-the-simulator-works)
-- [Alert Rules](#alert-rules)
-
----
-
 ## Overview
 
 OfficePulse tracks 15 virtual devices (fans + lights) across 3 office rooms, simulates realistic on/off patterns based on time-of-day, streams live updates over WebSocket, and lets you query the office state via a Discord bot powered by a DeepSeek LLM agent.
