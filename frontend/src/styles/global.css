@@ -1,0 +1,211 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d0d1a;
+  --surface:   #16162a;
+  --surface2:  #1e1e33;
+  --border:    #2a2a44;
+  --text:      #e0e0f0;
+  --muted:     #666;
+  --cyan:      #00bcd4;
+  --amber:     #ffb300;
+  --red:       #ef5350;
+  --green:     #4caf50;
+  --radius:    10px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Layout ───────────────────────────────────────────────────────────────── */
+.app { max-width: 1200px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 20px; }
+
+.header { display: flex; align-items: center; gap: 16px; }
+.header h1 { font-size: 1.4rem; font-weight: 700; color: var(--cyan); }
+.clock { margin-left: auto; color: var(--muted); font-size: 0.85rem; }
+
+.top-row { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
+
+/* ── Connection chip ──────────────────────────────────────────────────────── */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+.chip-live         { background: rgba(76,175,80,0.15); color: var(--green); border: 1px solid var(--green); }
+.chip-reconnecting { background: rgba(239,83,80,0.12); color: var(--red);   border: 1px solid var(--red); }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── Power meter ──────────────────────────────────────────────────────────── */
+.power-meter { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.meter-dial  { display: flex; justify-content: center; }
+.room-bar    { display: flex; align-items: center; gap: 8px; }
+.rb-label    { width: 58px; color: var(--muted); font-size: 0.8rem; }
+.rb-track    { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.rb-fill     { height: 100%; background: var(--cyan); border-radius: 3px; transition: width 0.5s ease; }
+.rb-val      { width: 44px; text-align: right; font-size: 0.8rem; color: var(--text); }
+.kwh-row     { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); font-size: 0.9rem; }
+.kwh-row strong { color: var(--amber); }
+.skeleton    { height: 200px; background: var(--surface2); border-radius: var(--radius); }
+
+/* ── Office map ───────────────────────────────────────────────────────────── */
+.office-map { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.office-map h4 { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
+
+/* Fan in map */
+.map-fan-spin {
+  animation: mapFanRotate 1s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes mapFanRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.map-fan-ring {
+  animation: mapFanRing 2s ease-in-out infinite;
+}
+@keyframes mapFanRing { 0%,100%{ opacity:0.3; r:22 } 50%{ opacity:0.7; r:24 } }
+
+/* Light halos in map */
+.map-light-halo-1 { animation: halo1 2s ease-in-out infinite; }
+.map-light-halo-2 { animation: halo2 2s ease-in-out infinite; }
+.map-light-halo-3 { animation: halo3 2s ease-in-out infinite; }
+@keyframes halo1 { 0%,100%{opacity:0.20} 50%{opacity:0.35} }
+@keyframes halo2 { 0%,100%{opacity:0.10} 50%{opacity:0.20} }
+@keyframes halo3 { 0%,100%{opacity:0.05} 50%{opacity:0.10} }
+
+.map-light-ray { animation: rayPulse 2s ease-in-out infinite; }
+@keyframes rayPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+/* ── Trend chart ──────────────────────────────────────────────────────────── */
+.trend-chart { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.trend-chart h4 { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; }
+
+/* ── Device section ───────────────────────────────────────────────────────── */
+.device-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.room-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.room-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+.room-header h3 { font-size: 0.95rem; font-weight: 600; }
+.room-stats { font-size: 0.78rem; color: var(--muted); }
+.device-grid { display: flex; flex-direction: column; gap: 6px; }
+
+/* ── Device tile ──────────────────────────────────────────────────────────── */
+.device-tile {
+  display: grid;
+  grid-template-columns: 4px 44px 1fr auto;
+  gap: 0 10px;
+  align-items: center;
+  padding: 8px 10px 8px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+/* Left color bar */
+.tile-bar {
+  width: 4px;
+  height: 100%;
+  align-self: stretch;
+  border-radius: 10px 0 0 10px;
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+
+/* ON states */
+.tile-on.tile-fan {
+  background: #081c2a;
+  border-color: #005f70;
+  box-shadow: 0 0 12px rgba(0, 188, 212, 0.18), inset 0 0 20px rgba(0, 188, 212, 0.05);
+}
+.tile-on.tile-fan .tile-bar { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+
+.tile-on.tile-light {
+  background: #1c1200;
+  border-color: #7a5200;
+  box-shadow: 0 0 12px rgba(255, 179, 0, 0.20), inset 0 0 20px rgba(255, 179, 0, 0.06);
+}
+.tile-on.tile-light .tile-bar { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+/* flip animation on state change */
+.tile-flip { animation: tileFlip 0.4s ease; }
+@keyframes tileFlip {
+  0%   { transform: scaleY(0.85); opacity: 0.6; }
+  60%  { transform: scaleY(1.04); }
+  100% { transform: scaleY(1);    opacity: 1; }
+}
+
+/* icon wrapper */
+.tile-icon-wrap { display: flex; align-items: center; justify-content: center; width: 44px; }
+.device-svg-icon { display: block; overflow: visible; }
+
+/* Fan SVG animations */
+.fan-blades-spin {
+  animation: svgFanRotate 0.9s linear infinite;
+}
+@keyframes svgFanRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.fan-ring-pulse { animation: fanRingPulse 1.8s ease-in-out infinite; }
+@keyframes fanRingPulse { 0%,100%{ opacity:0.4; } 50%{ opacity:0.8; } }
+
+/* fan-icon-on: give the whole SVG a cyan drop-shadow */
+.fan-icon-on {
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.6));
+}
+
+/* Light SVG animations */
+.light-ring-1 { animation: lightRing1 2s ease-in-out infinite; }
+.light-ring-2 { animation: lightRing2 2s ease-in-out infinite; }
+.light-ring-3 { animation: lightRing3 2s ease-in-out infinite; }
+@keyframes lightRing1 { 0%,100%{opacity:0.22} 50%{opacity:0.42} }
+@keyframes lightRing2 { 0%,100%{opacity:0.13} 50%{opacity:0.25} }
+@keyframes lightRing3 { 0%,100%{opacity:0.08} 50%{opacity:0.15} }
+
+.light-ray { animation: lightRayPulse 2s ease-in-out infinite; }
+@keyframes lightRayPulse { 0%,100%{opacity:0.5; stroke-width:1.5} 50%{opacity:1; stroke-width:2} }
+
+/* tile text */
+.tile-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.device-name { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.device-last { font-size: 0.68rem; color: var(--muted); }
+
+.tile-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding-right: 6px; }
+.device-watt { font-size: 0.72rem; color: var(--muted); }
+
+.pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.pill-on  { background: rgba(0,188,212,0.18); color: #00e5ff; border: 1px solid rgba(0,188,212,0.4); }
+.pill-off { background: rgba(255,255,255,0.05); color: #555; border: 1px solid #333; }
+
+/* ── Alerts panel ─────────────────────────────────────────────────────────── */
+.alerts-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.alerts-panel h3 { font-size: 0.95rem; font-weight: 600; }
+.alerts-panel.empty { color: var(--muted); font-size: 0.9rem; }
+
+.alert-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; border-left: 3px solid currentColor; }
+.alert-amber   { color: var(--amber); background: rgba(255,179,0,0.07); }
+.alert-red     { color: var(--red);   background: rgba(239,83,80,0.07); }
+.alert-resolved { color: #444; background: transparent; }
+
+.alert-dot  { font-size: 1rem; line-height: 1; }
+.alert-body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.alert-msg  { font-size: 0.85rem; color: var(--text); }
+.alert-time { font-size: 0.75rem; color: var(--muted); }
+
+.resolved-details summary { cursor: pointer; font-size: 0.8rem; color: var(--muted); padding: 4px 0; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .top-row            { grid-template-columns: 1fr; }
+  .device-section     { grid-template-columns: 1fr; }
+}

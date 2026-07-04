@@ -1,0 +1,6 @@
+langgraph==0.2.60
+langchain-mcp-adapters==0.1.14
+langchain-openai==0.3.0
+openai>=1.58.1
+cachetools==5.5.0
+python-dotenv==1.0.1
