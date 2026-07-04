@@ -1,14 +1,3 @@
----
-title: OfficePulse
-emoji: ⚡
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 7860
-pinned: false
-short_description: Real-time office electricity monitor with AI Discord bot
----
-
 # ⚡ OfficePulse — Real-Time Office Electricity Monitor
 
 > **IUT Hackathon Project** — A full-stack, AI-powered system that monitors, simulates, and reports on office electricity consumption in real time.
@@ -23,6 +12,23 @@ short_description: Real-time office electricity monitor with AI Discord bot
 | **GitHub Repo** | 💻 [github.com/arif124713/IUT-Hackathon](https://github.com/arif124713/IUT-Hackathon) |
 | **Join Discord Server** | 💬 [discord.gg/x6T93a2J](https://discord.gg/x6T93a2J) — test the bot live |
 | **Add Bot to Your Server** | 🤖 [Invite OfficePulse Bot](https://discord.com/oauth2/authorize?client_id=1522825819926433943&permissions=2048&scope=bot) |
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [MCP — The Core Innovation](#mcp--the-core-innovation)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [API Reference](#api-reference)
+- [Discord Bot Commands](#discord-bot-commands)
+- [Frontend Features](#frontend-features)
+- [How the Simulator Works](#how-the-simulator-works)
+- [Alert Rules](#alert-rules)
 
 ---
 
