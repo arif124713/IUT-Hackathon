@@ -1,0 +1,26 @@
+# Backend
+fastapi==0.139.0
+uvicorn[standard]==0.32.1
+sqlalchemy[asyncio]==2.0.36
+aiosqlite==0.20.0
+pydantic==2.13.4
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+httpx==0.28.1
+
+# MCP Server
+mcp==1.28.1
+
+# Agent
+langgraph==0.2.60
+langchain-mcp-adapters==0.1.14
+langchain-openai==0.3.0
+openai>=1.58.1
+cachetools==5.5.0
+
+# Compat
+audioop-lts
+cryptography
+platformdirs
+rich
+exceptiongroup

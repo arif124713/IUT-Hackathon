@@ -9,11 +9,13 @@ class Base(DeclarativeBase):
 
 def make_engine():
     settings = get_settings()
-    return create_async_engine(
-        settings.database_url,
-        pool_recycle=3600,
-        echo=False,
-    )
+    url = settings.database_url
+    kwargs: dict = {"echo": False}
+    if "sqlite" in url:
+        kwargs["connect_args"] = {"check_same_thread": False}
+    else:
+        kwargs["pool_recycle"] = 3600
+    return create_async_engine(url, **kwargs)
 
 
 engine = make_engine()

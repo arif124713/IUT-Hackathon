@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 
-const WS_URL = `ws://${window.location.host}/ws/live`;
+const WS_URL = `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws/live`;
 
 function reducer(state, action) {
   switch (action.type) {
