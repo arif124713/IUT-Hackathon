@@ -133,7 +133,7 @@ LangGraph ReAct Agent  ←── DeepSeek LLM (reasons about what to do)
 | **Database** | SQLite (cloud/HF) · MySQL 8.0 (local) |
 | **Simulator** | Markov-chain scheduler (time-of-day buckets) |
 | **WebSocket** | asyncio.Queue broadcaster fan-out |
-| **MCP Server** | `mcp` 1.28 (FastMCP), streamable-HTTP transport ← *hackathon highlight* |
+| **MCP Server** | `mcp` 1.28 (FastMCP), streamable-HTTP transport  |
 | **AI Agent** | LangGraph 0.2.60 ReAct, langchain-mcp-adapters 0.1.14 |
 | **LLM** | DeepSeek (`deepseek-chat`) via OpenAI-compatible API |
 | **Discord Bot** | discord.py 2.4, proactive alert poller |
