@@ -23,6 +23,7 @@ short_description: Real-time office electricity monitor with AI Discord bot
 | **GitHub Repo** | 💻 [github.com/arif124713/IUT-Hackathon](https://github.com/arif124713/IUT-Hackathon) |
 | **Join Discord Server** | 💬 [discord.gg/x6T93a2J](https://discord.gg/x6T93a2J) — test the bot live |
 | **Add Bot to Your Server** | 🤖 [Invite OfficePulse Bot](https://discord.com/oauth2/authorize?client_id=1522825819926433943&permissions=2048&scope=bot) |
+| **Demo Video** | 🎬 *(coming soon — link will be added before submission)* |
 
 ---
 
@@ -31,6 +32,7 @@ short_description: Real-time office electricity monitor with AI Discord bot
 - [Overview](#overview)
 - [MCP — The Core Innovation](#mcp--the-core-innovation)
 - [Architecture](#architecture)
+- [Hardware Design](#hardware-design)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
@@ -40,6 +42,7 @@ short_description: Real-time office electricity monitor with AI Discord bot
 - [Frontend Features](#frontend-features)
 - [How the Simulator Works](#how-the-simulator-works)
 - [Alert Rules](#alert-rules)
+- [Assumptions](#assumptions)
 
 ---
 
@@ -103,6 +106,12 @@ LangGraph ReAct Agent  ←── DeepSeek LLM (reasons about what to do)
 ---
 
 ## Architecture
+
+> Official diagram: [`diagrams/system-architecture.svg`](diagrams/system-architecture.svg)
+
+![OfficePulse System Architecture](diagrams/system-architecture.svg)
+
+The sketch below is illustrative — the SVG above is the definitive diagram:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -191,6 +200,11 @@ IUT/
 │       ├── App.jsx           # Root layout + live Dhaka clock
 │       ├── hooks/useLiveOffice.js   # WebSocket delta-reduction hook
 │       └── components/       # OfficeMap, DeviceTile, PowerMeter, etc.
+│
+├── diagrams/                 # Hardware + architecture diagrams
+│   ├── system-architecture.svg    # Official system architecture diagram
+│   ├── esp32_room_monitor.ino     # ESP32 firmware sketch
+│   └── wokwi-link.md             # Wokwi simulation link + build guide
 │
 ├── Dockerfile                # HF Spaces Docker build
 ├── nginx.hf.conf             # nginx: serves React + proxies API/WS/MCP
@@ -368,6 +382,75 @@ Work rooms have high ON probability during office hours; the drawing room is mor
 | `marathon_room` | All devices in a room ON for `MARATHON_MINUTES` continuously | When any device turns off |
 
 Active alerts are broadcast over WebSocket and announced in Discord (rate-limited to once per 30 minutes per room+type).
+
+---
+
+## Hardware Design
+
+OfficePulse is designed for real deployment: one ESP32 per room reads five current-transformer sensors (one per device) and posts live data to the FastAPI backend over Wi-Fi. The simulator in the cloud runs the same Markov logic, making it a perfect stand-in until hardware is wired.
+
+### Real-world component chain
+
+| Stage | Component | Purpose |
+|---|---|---|
+| Sensing | ZMCT103C current transformer (× 5 per room) | Clamps around each device's live wire — galvanic isolation, mains never touches the MCU |
+| Conditioning | Burden resistor + half-wave rectifier + RC smoothing | Converts CT secondary current → 0–3.3 V DC proportional to load |
+| MCU | ESP32 DevKit v1 | 5 ADC reads, threshold logic, Wi-Fi uplink |
+| Uplink | Wi-Fi → HTTP POST /ingest → FastAPI | Replaces the simulator in a real deployment |
+| Power | 5 V USB adapter → ESP32 VIN | Standard bench supply |
+
+**Key design decisions:**
+- **Isolation:** CTs provide magnetic coupling only — no conductive path from 220 V AC to the 3.3 V logic rail. Resistive voltage dividers from mains are never used.
+- **ADC1 only:** GPIOs 32–39 (ADC1) are used exclusively. ADC2 shares silicon with the ESP32 Wi-Fi radio — reading ADC2 while Wi-Fi is active returns garbage.
+- **Detection:** RMS-proportional ADC value above threshold 300/4095 ≈ device ON; magnitude maps to `P ≈ V_mains × I` for approximate wattage.
+- **Scaling:** One ESP32 per room (3 nodes) posting to the same backend — simpler wiring than a central node with a CD74HC4067 mux.
+
+### Wokwi simulation mapping
+
+Wokwi has no ZMCT103C model. Potentiometers stand in because both produce a 0–3.3 V proportional signal on an ADC pin.
+
+| Real part | Wokwi stand-in | Why equivalent |
+|---|---|---|
+| CT + conditioning | Potentiometer on ADC pin | Both produce 0–3.3 V proportional to load current |
+| Device on/off | Slide switch gating the pot output | Represents current present / absent |
+| Detected state | LED per device (220 Ω) | Visual confirmation firmware detected ON |
+
+### Pin map (ESP32 DevKit v1)
+
+| Device | Wattage | Sense pin (ADC1) | Status LED pin |
+|---|---|---|---|
+| Fan 1 | 65 W | GPIO 32 | GPIO 16 |
+| Fan 2 | 75 W | GPIO 33 | GPIO 17 |
+| Light 1 | 15 W | GPIO 34 *(input-only)* | GPIO 18 |
+| Light 2 | 15 W | GPIO 35 *(input-only)* | GPIO 19 |
+| Light 3 | 20 W | GPIO 36 / VP *(input-only)* | GPIO 21 |
+
+**Wiring:** pot left leg → 3V3, right leg → GND, wiper → sense pin. LED: GPIO → 220 Ω → anode, cathode → GND.
+
+### Wokwi project
+
+See [`diagrams/wokwi-link.md`](diagrams/wokwi-link.md) for the public simulation link and step-by-step build instructions.  
+Firmware: [`diagrams/esp32_room_monitor.ino`](diagrams/esp32_room_monitor.ino)
+
+> **Why Wokwi over Tinkercad:** Wokwi has first-class ESP32 support with Wi-Fi simulation and shareable text-based projects. Tinkercad's Arduino Uno has no Wi-Fi, which breaks the "posts to backend" story.
+
+---
+
+## Assumptions
+
+The problem statement contains a device-count inconsistency that we address explicitly here rather than silently picking one number.
+
+> **Canonical device count: 15** — 3 rooms × (2 fans + 3 lights) = 15 devices.
+>
+> The problem statement specifies the per-room composition as 2 fans + 3 lights but also says "all 18 devices" in several places. We implement the explicit room composition (15 devices). `FANS_PER_ROOM` and `LIGHTS_PER_ROOM` are configurable environment variables, so 18 devices (e.g., 3 fans + 3 lights) is a one-line `.env` change if the organizers clarify.
+>
+> Maximum office load at 15 devices: 2×(65+75) + 3×(15+15+20) = 280 + 150 = **430 W per room × 3 = 1290 W total** (fans vary by room; the simulator uses per-device wattages).
+
+Other assumptions:
+- Office timezone: **Asia/Dhaka** (UTC+6) — configurable via `TZ`
+- Office hours: **09:00–17:00** — configurable via `OFFICE_OPEN` / `OFFICE_CLOSE`
+- Simulator tick: **5 seconds** real time = 1 sim-second (configurable via `SIM_TICK_SECONDS`)
+- Alert rate-limit: once per **30 minutes** per room+type to avoid Discord spam
 
 ---
 
